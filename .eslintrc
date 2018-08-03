@@ -1,0 +1,52 @@
+{
+    "extends": "airbnb",
+    "parser": "babel-eslint",
+    "env": {
+        "browser": true,
+        "jest": true
+    },
+    "rules": {
+        "strict": 0,
+        "func-names": [ "error", "never" ],
+        "array-bracket-spacing": [ "error", "always" ],
+        "import/prefer-default-export": 0,
+        "indent": [ "error", 4, {
+            "SwitchCase": 1,
+            "VariableDeclarator": 1,
+            "outerIIFEBody": 1,
+            "FunctionDeclaration": {
+                "parameters": 1,
+                "body": 1
+            },
+            "FunctionExpression": {
+                "parameters": 1,
+                "body": 1
+            },
+            "CallExpression": {
+                "arguments": 1
+            },
+            "ArrayExpression": 1,
+            "ObjectExpression": 1,
+            "ImportDeclaration": 1,
+            "flatTernaryExpressions": false,
+            "ignoredNodes": [
+                "JSXElement", "JSXElement > *", "JSXAttribute", "JSXIdentifier", "JSXNamespacedName", "JSXMemberExpression",
+                "JSXSpreadAttribute", "JSXExpressionContainer", "JSXOpeningElement", "JSXClosingElement", "JSXText", "JSXEmptyExpression",
+                "JSXSpreadChild"
+            ],
+            "ignoreComments": false
+        }],
+        "react/jsx-indent-props": [ "error", 4 ],
+        "react/jsx-indent": [ "error", 4 ],
+        "react/jsx-curly-spacing": [ "error", "always" ],
+        
+        "jsx-a11y/no-static-element-interactions": "off",
+        "jsx-a11y/click-events-have-key-events": "off",
+
+        "jsx-a11y/anchor-is-valid": [ "error", {
+            "components": [ "Link" ],
+            "specialLink": [ "to" ],
+            "aspects": [ "noHref", "invalidHref", "preferButton" ]
+        }]
+    }
+}

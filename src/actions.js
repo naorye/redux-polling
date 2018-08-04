@@ -1,33 +1,40 @@
 export const actionTypes = {
-    start: '@POLL_STATE/START',
-    stop: '@POLL_STATE/STOP',
-    request: '@POLL_STATE/REQUEST',
-    addEntry: '@POLL_STATE/ADD_ENTRY',
+    start: '@POLLING_STATE/START',
+    stop: '@POLLING_STATE/STOP',
+    request: '@POLLING_STATE/REQUEST',
+    addEntry: '@POLLING_STATE/ADD_ENTRY',
 };
 
 export const createAction = (type, meta, payload) => ({ type, meta, payload });
 const createActionCreator = (type, meta) => (...args) => createAction(type, meta, [ ...args ]);
 
-export function isPollAction(action) {
+export function isPollingAction(action) {
     return !!(
         Object.values(actionTypes).indexOf(action.type) > -1
-        && action.meta && action.meta.pollName
+        && action.meta && action.meta.pollingName
     );
 }
 
-export function createPollActions(pollName, pollLogic, pollInterval = 5000, historyLimit = 1) {
-    if (typeof pollName !== 'string') {
-        throw new Error('pollName is required and must be a string');
+export function createPollingActions(
+    pollingName, callbacks, pollingInterval = 5000, historyLimit = 1,
+) {
+    if (!(callbacks instanceof Object)) {
+        /* eslint-disable-next-line no-param-reassign */
+        callbacks = { polling: callbacks };
     }
 
-    if (typeof pollLogic !== 'function') {
-        throw new Error('pollLogic is required and must be a function');
+    if (typeof pollingName !== 'string') {
+        throw new Error('pollingName is required and must be a string');
+    }
+
+    if (typeof callbacks.polling !== 'function') {
+        throw new Error('polling method is required and must be a function');
     }
 
     const meta = {
-        pollName,
-        pollLogic,
-        pollInterval,
+        pollingName,
+        callbacks,
+        pollingInterval,
         historyLimit,
     };
 

@@ -1,70 +1,70 @@
-import { actionTypes, isPollAction } from './actions';
+import { actionTypes, isPollingAction } from './actions';
 
-export const pollStateNamespace = 'POLL_STATE';
+const initialPollingState = {
+    isActive: false,
+    requestPayload: undefined,
+    history: [],
+    lastEntry: undefined,
+};
 
-export function getPollState(state, pollName) {
-    return (state[pollStateNamespace] || {})[pollName] || {};
+export const reduxPollingNamespace = 'REDUX_POLLING';
+
+export function getPollingState(state, pollingName) {
+    return (state[reduxPollingNamespace] || {})[pollingName] || initialPollingState;
 }
 
-function createPollReducer() {
-    const initialPollState = {
-        isActive: false,
-        requestPayload: undefined,
-        history: [],
-        lastEntry: undefined,
-    };
-
+function createPollingReducer() {
     const initialState = {};
 
     return function (state = initialState, action) {
-        if (!isPollAction(action)) {
+        if (!isPollingAction(action)) {
             return state;
         }
 
-        const { meta: { pollName, historyLimit } } = action;
-        const prevPollState = state[pollName];
-        let nextPollState;
+        const { meta: { pollingName, historyLimit } } = action;
+        const prevPollingState = state[pollingName];
+        let nextPollingState;
         let nextHistory;
 
         switch (action.type) {
             case actionTypes.start:
-                nextPollState = {
-                    ...initialPollState,
-                    ...prevPollState,
+                nextPollingState = {
+                    ...initialPollingState,
+                    ...prevPollingState,
                     isActive: true,
                     requestPayload: action.payload,
                 };
                 break;
 
             case actionTypes.stop:
-                nextPollState = {
-                    ...prevPollState,
+                nextPollingState = {
+                    ...prevPollingState,
                     isActive: false,
                 };
                 break;
 
             case actionTypes.addEntry:
-                nextHistory = [ ...prevPollState.history, action.payload ]
+                nextHistory = [ ...prevPollingState.history, action.payload ]
                     .slice(-historyLimit);
 
-                nextPollState = {
-                    ...prevPollState,
+                nextPollingState = {
+                    ...prevPollingState,
                     history: nextHistory,
                     lastEntry: action.payload,
                 };
                 break;
 
-            default: nextPollState = undefined;
+            default: nextPollingState = undefined;
                 break;
         }
 
-        const nextState = !nextPollState ? state : {
+        const nextState = !nextPollingState ? state : {
             ...state,
-            [pollName]: nextPollState,
+            [pollingName]: nextPollingState,
         };
 
         return nextState;
     };
 }
 
-export default createPollReducer();
+export default createPollingReducer();

@@ -1,8 +1,8 @@
-import { actionTypes, isPollAction } from './actions';
+import { actionTypes, isPollingAction } from './actions';
 import * as logic from './logic';
 
 export default store => next => (action) => {
-    if (!isPollAction(action)) {
+    if (!isPollingAction(action)) {
         return next(action);
     }
 

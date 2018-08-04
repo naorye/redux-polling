@@ -1,10 +1,10 @@
 import { actionTypes, createAction } from './actions';
-import { getPollState } from './reducer';
+import { getPollingState } from './reducer';
 
 export function start({ getState, dispatch }, action, next) {
     const state = getState();
-    const { pollName } = action.meta;
-    const { isActive } = getPollState(state, pollName);
+    const { pollingName } = action.meta;
+    const { isActive } = getPollingState(state, pollingName);
 
     if (isActive) {
         return false;
@@ -25,31 +25,41 @@ export function stop(_, action, next) {
 
 export function request({ getState, dispatch }, action) {
     const state = getState();
-    const { pollName } = action.meta;
-    const { isActive, requestPayload } = getPollState(state, pollName);
+    const { pollingName } = action.meta;
+    const { isActive, requestPayload } = getPollingState(state, pollingName);
 
     if (!isActive) {
         return false;
     }
 
-    const { pollLogic, pollInterval } = action.meta;
-    return Promise.resolve(pollLogic(...requestPayload))
+    const { callbacks, pollingInterval } = action.meta;
+    return Promise.resolve(callbacks.polling(...requestPayload))
         .then(
             (value) => {
                 const addEntryAction = createAction(actionTypes.addEntry, action.meta, value);
                 dispatch(addEntryAction);
             },
-            err => err, // If exception during pollLogic - do nothing
+            err => err, // If exception during polling - do nothing
         )
         .then(() => {
             setTimeout(() => {
                 const requestAction = createAction(actionTypes.request, action.meta);
                 dispatch(requestAction);
-            }, pollInterval);
+            }, pollingInterval);
         });
 }
 
-export function addEntry(_, action, next) {
-    next(action);
-    return true;
+export function addEntry({ getState }, action, next) {
+    const { callbacks } = action.meta;
+
+    let shouldAddEntry = true;
+    if (typeof callbacks.shouldAddEntry === 'function') {
+        shouldAddEntry = callbacks.shouldAddEntry(getState, action.payload);
+    }
+
+    if (shouldAddEntry) {
+        next(action);
+    }
+
+    return shouldAddEntry;
 }

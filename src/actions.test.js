@@ -35,4 +35,10 @@ describe('./actions', () => {
     test('createPollingActions should be a function', () => {
         expect(typeof createPollingActions).toBe('function');
     });
+
+    test('createPollingActions should contain start and stop functions', () => {
+        const actions = createPollingActions('REDUX_POLLING', { polling: () => {} });
+        expect(typeof actions.start).toBe('function');
+        expect(typeof actions.stop).toBe('function');
+    });
 });

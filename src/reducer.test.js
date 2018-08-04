@@ -21,7 +21,6 @@ describe('./reducer', () => {
           meta: { pollingName: 'REDUX_POLLING' }
         };
 
-
         expect(reducer({}, startAction)).toEqual({
             REDUX_POLLING: {
                 history: [],
@@ -29,7 +28,7 @@ describe('./reducer', () => {
                 lastEntry: undefined,
                 requestPayload: undefined
             }
-        })
+        });
     });
 
     it('should handle stop polling', () => {
@@ -42,8 +41,8 @@ describe('./reducer', () => {
             REDUX_POLLING: {
                 isActive: false
             }
-        })
-    })
+        });
+    });
 
     it('should handle add entry action', () => {
         const startAction = {
@@ -64,6 +63,6 @@ describe('./reducer', () => {
                 lastEntry: undefined,
                 requestPayload: undefined
             }
-        })
-    })
+        });
+    });
 })

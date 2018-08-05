@@ -5,6 +5,18 @@ import { createSelector } from 'reselect';
 const pollingInterval = 1000;
 const historyLength = 30;
 
+function fetchPoints(length) {
+    return new Promise((resolve, reject) => {
+        jsonp(`https://canvasjs.com/services/data/datapoints.php?length=${length}&type=jsonp`, null, (err, data) => {
+            if (err) {
+                reject(err.message);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+}
+
 export const pointPollingSelectors = {
     isPointPollingActive: state => getPollingState(state, 'pointPolling').isActive,
     getPointHistory: state => getPollingState(state, 'pointPolling').history,
@@ -28,25 +40,30 @@ export const pointPollingSelectors = {
     ),
 };
 
-function polling(getState) {
-    return new Promise((resolve, reject) => {
-        jsonp('https://canvasjs.com/services/data/datapoints.php?length=1&type=jsonp', null, (err, data) => {
-            if (err) {
-                reject(err.message);
-            } else {
-                const lastEntry = pointPollingSelectors.getLastEntry(getState());
-                const index = lastEntry ? lastEntry.index + 1 : 1;
-                const [ [ , point ] ] = data;
+async function polling(getState) {
+    const [ [ , point ] ] = await fetchPoints(1);
+    
+    const lastEntry = pointPollingSelectors.getLastEntry(getState());
+    const index = lastEntry ? lastEntry.index + 1 : 1;
 
-                resolve({ point, index });
-            }
-        });
-    });
+    return { point, index };
 }
 
-// Add only even points
 function shouldAddEntry(getState, value) {
-    return value.point % 2 === 0;
+    // const isEven = value.point % 2 === 0;
+    // if (!isEven) {
+    //     console.log(`Filter odd point ${value.point}`);
+    // }
+    // return isEven;
+    return true;
 }
 
-export const pointPollingActions = createPollingActions('pointPolling', { polling, shouldAddEntry }, pollingInterval, historyLength);
+async function initialPolling() {
+    const [ ...points ] = await fetchPoints(historyLength);
+    
+    return points.map(([, point], index) => ({ point, index: index + 1 }));
+}
+
+const callbacks = { polling, shouldAddEntry, initialPolling };
+
+export const pointPollingActions = createPollingActions('pointPolling', callbacks, pollingInterval, historyLength);

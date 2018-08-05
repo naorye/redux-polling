@@ -1,6 +1,6 @@
 import { actionTypes, isPollingAction } from './actions';
 
-const initialPollingState = {
+export const initialPollingState = {
     isActive: false,
     requestPayload: undefined,
     history: [],

@@ -1,4 +1,6 @@
-node_modules/
+node_modules/*
+example/node_modules/*
+!example/node_modules/redux-polling
 /dist
 coverage/
 .DS_Store

@@ -33,7 +33,7 @@ export function request({ getState, dispatch }, action) {
     }
 
     const { callbacks, pollingInterval } = action.meta;
-    return Promise.resolve(callbacks.polling(...requestPayload))
+    return Promise.resolve(callbacks.polling(...requestPayload, getState))
         .then(
             (value) => {
                 const addEntryAction = createAction(actionTypes.addEntry, action.meta, value);
@@ -51,10 +51,11 @@ export function request({ getState, dispatch }, action) {
 
 export function addEntry({ getState }, action, next) {
     const { callbacks } = action.meta;
+    const value = action.payload;
 
     let shouldAddEntry = true;
     if (typeof callbacks.shouldAddEntry === 'function') {
-        shouldAddEntry = callbacks.shouldAddEntry(getState, action.payload);
+        shouldAddEntry = callbacks.shouldAddEntry(getState, value);
     }
 
     if (shouldAddEntry) {

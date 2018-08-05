@@ -5,6 +5,10 @@ export const actionTypes = {
     addEntry: '@POLLING_STATE/ADD_ENTRY',
 };
 
+function isObject(obj) {
+    return typeof obj === 'object' && obj !== null;
+}
+
 export const createAction = (type, meta, payload) => ({ type, meta, payload });
 const createActionCreator = (type, meta) => (...args) => createAction(type, meta, [ ...args ]);
 
@@ -18,7 +22,7 @@ export function isPollingAction(action) {
 export function createPollingActions(
     pollingName, callbacks, pollingInterval = 5000, historyLimit = 1,
 ) {
-    if (!(callbacks instanceof Object)) {
+    if (!isObject(callbacks)) {
         /* eslint-disable-next-line no-param-reassign */
         callbacks = { polling: callbacks };
     }

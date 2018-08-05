@@ -2,7 +2,7 @@ export const actionTypes = {
     start: '@POLLING_STATE/START',
     stop: '@POLLING_STATE/STOP',
     request: '@POLLING_STATE/REQUEST',
-    addEntry: '@POLLING_STATE/ADD_ENTRY',
+    addEntries: '@POLLING_STATE/ADD_ENTRIES',
 };
 
 function isObject(obj) {

@@ -25,6 +25,7 @@ function createPollingReducer() {
         const prevPollingState = state[pollingName];
         let nextPollingState;
         let nextHistory;
+        let lastEntry;
 
         switch (action.type) {
             case actionTypes.start:
@@ -43,14 +44,15 @@ function createPollingReducer() {
                 };
                 break;
 
-            case actionTypes.addEntry:
-                nextHistory = [ ...prevPollingState.history, action.payload ]
+            case actionTypes.addEntries:
+                nextHistory = [ ...prevPollingState.history, ...action.payload ]
                     .slice(-historyLimit);
+                [ lastEntry ] = action.payload.slice(-1);
 
                 nextPollingState = {
                     ...prevPollingState,
                     history: nextHistory,
-                    lastEntry: action.payload,
+                    lastEntry,
                 };
                 break;
 

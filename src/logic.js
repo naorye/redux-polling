@@ -12,7 +12,8 @@ export function start({ getState, dispatch }, action, next) {
 
     next(action);
 
-    const requestAction = createAction(actionTypes.request, action.meta);
+    const meta = { ...action.meta, initialPolling: true };
+    const requestAction = createAction(actionTypes.request, meta);
     dispatch(requestAction);
 
     return true;
@@ -32,35 +33,49 @@ export function request({ getState, dispatch }, action) {
         return false;
     }
 
-    const { callbacks, pollingInterval } = action.meta;
-    return Promise.resolve(callbacks.polling(...requestPayload, getState))
+    const { callbacks, pollingInterval, initialPolling } = action.meta;
+    const isInitialPolling = initialPolling === true && typeof callbacks.initialPolling === 'function';
+    const pollingFunc = isInitialPolling ? callbacks.initialPolling : callbacks.polling;
+    return Promise.resolve(pollingFunc(...requestPayload, getState))
         .then(
-            (value) => {
-                const addEntryAction = createAction(actionTypes.addEntry, action.meta, value);
-                dispatch(addEntryAction);
+            (data) => {
+                const entries = isInitialPolling ? data : [ data ];
+                const addEntriesAction = createAction(
+                    actionTypes.addEntries,
+                    action.meta,
+                    entries,
+                );
+                dispatch(addEntriesAction);
             },
             err => err, // If exception during polling - do nothing
         )
         .then(() => {
             setTimeout(() => {
-                const requestAction = createAction(actionTypes.request, action.meta);
+                const meta = { ...action.meta, initialPolling: false };
+                const requestAction = createAction(actionTypes.request, meta);
                 dispatch(requestAction);
             }, pollingInterval);
         });
 }
 
-export function addEntry({ getState }, action, next) {
-    const { callbacks } = action.meta;
-    const value = action.payload;
+export function addEntries({ getState }, action, next) {
+    const { callbacks: { shouldAddEntry } } = action.meta;
+    let entries = action.payload;
 
-    let shouldAddEntry = true;
-    if (typeof callbacks.shouldAddEntry === 'function') {
-        shouldAddEntry = callbacks.shouldAddEntry(getState, value);
+    if (!Array.isArray(entries)) {
+        throw new Error(`Payload for ${actionTypes.addEntries} must be array of entries`);
     }
 
-    if (shouldAddEntry) {
-        next(action);
+    if (typeof shouldAddEntry === 'function') {
+        entries = entries.filter(entry => shouldAddEntry(getState, entry));
     }
 
-    return shouldAddEntry;
+    if (entries.length > 0) {
+        next({
+            ...action,
+            payload: entries,
+        });
+    }
+
+    return entries.length;
 }

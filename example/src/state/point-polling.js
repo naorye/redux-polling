@@ -1,4 +1,4 @@
-import { createPollingActions, getPollingState } from 'redux-polling'; /* eslint-disable-line import/no-unresolved */
+import { createPollingActions, getPollingState } from 'dist'; /* eslint-disable-line import/no-unresolved */
 import jsonp from 'jsonp';
 import { createSelector } from 'reselect';
 

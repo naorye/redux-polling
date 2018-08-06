@@ -1,4 +1,4 @@
-import { reduxPollingMiddleware } from 'redux-polling'; /* eslint-disable-line import/no-unresolved */
+import { reduxPollingMiddleware } from 'dist'; /* eslint-disable-line import/no-unresolved */
 import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './reducer';
 

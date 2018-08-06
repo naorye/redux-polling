@@ -1,30 +1,31 @@
+import { reduxPollingMiddleware } from 'redux-polling'; /* eslint-disable-line import/no-unresolved */
 import { createStore, applyMiddleware, compose } from 'redux';
-import { reduxPollingMiddleware } from 'redux-polling';
 import rootReducer from './reducer';
 
 const initialState = {};
 const enhancers = [];
 const middleware = [
-  reduxPollingMiddleware,
+    reduxPollingMiddleware,
 ];
 
 if (process.env.NODE_ENV === 'development') {
-  const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
+    /* eslint-disable-next-line no-underscore-dangle */
+    const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
 
-  if (typeof devToolsExtension === 'function') {
-    enhancers.push(devToolsExtension());
-  }
+    if (typeof devToolsExtension === 'function') {
+        enhancers.push(devToolsExtension());
+    }
 }
 
 const composedEnhancers = compose(
-  applyMiddleware(...middleware),
-  ...enhancers
+    applyMiddleware(...middleware),
+    ...enhancers,
 );
 
 const store = createStore(
-  rootReducer,
-  initialState,
-  composedEnhancers
+    rootReducer,
+    initialState,
+    composedEnhancers,
 );
 
 export default store;

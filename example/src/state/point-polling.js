@@ -1,4 +1,4 @@
-import { createPollingActions, getPollingState} from 'redux-polling';
+import { createPollingActions, getPollingState } from 'redux-polling'; /* eslint-disable-line import/no-unresolved */
 import jsonp from 'jsonp';
 import { createSelector } from 'reselect';
 
@@ -23,11 +23,11 @@ export const pointPollingSelectors = {
     getLastEntry: state => getPollingState(state, 'pointPolling').lastEntry,
     getLastPoint: createSelector(
         state => getPollingState(state, 'pointPolling').lastEntry,
-        lastEntry => lastEntry ? lastEntry.point : undefined,
+        lastEntry => (lastEntry ? lastEntry.point : undefined),
     ),
     getLastChange: createSelector(
         state => getPollingState(state, 'pointPolling').history,
-        history => {
+        (history) => {
             if (history.length < 2) {
                 return undefined;
             }
@@ -42,14 +42,14 @@ export const pointPollingSelectors = {
 
 async function polling(getState) {
     const [ [ , point ] ] = await fetchPoints(1);
-    
+
     const lastEntry = pointPollingSelectors.getLastEntry(getState());
     const index = lastEntry ? lastEntry.index + 1 : 1;
 
     return { point, index };
 }
 
-function shouldAddEntry(getState, value) {
+function shouldAddEntry(/* getState, value */) {
     // const isEven = value.point % 2 === 0;
     // if (!isEven) {
     //     console.log(`Filter odd point ${value.point}`);
@@ -60,8 +60,8 @@ function shouldAddEntry(getState, value) {
 
 async function initialPolling() {
     const [ ...points ] = await fetchPoints(historyLength);
-    
-    return points.map(([, point], index) => ({ point, index: index + 1 }));
+
+    return points.map(([ , point ], index) => ({ point, index: index + 1 }));
 }
 
 const callbacks = { polling, shouldAddEntry, initialPolling };

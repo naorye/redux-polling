@@ -55,7 +55,6 @@ export default combineReducers({
     .....
     [reduxPollingNamespace]: reduxPollingReducer,
 });
-
 ```
 
 3. Your application is ready to use Redux Polling everywhere.
@@ -65,8 +64,10 @@ export default combineReducers({
 Let's say we want to implement a chart page that consist on data polling. The page has two components:
 1. Action panel component that contains two buttons: "Start Polling" and "Stop Polling".
 2. Chart component that shows the data.
-Redux Polling provides everything for those components: start and stop actions for the buttons and selectors for receiving the results and history. All we left to do is to implement the polling logic that fetches the data once. It will be called on each interval:
-````javascript point-polling.js
+   
+Redux Polling provides everything for those components: start and stop actions for the buttons and selectors for receiving the results and history. All we left to do is to implement the polling logic that fetches the data once (Redux Polling will call it on each interval):
+
+```javascript point-polling.js
 import { createPollingActions, getPollingState } from 'redux-polling';
 import { createSelector } from 'reselect';
 import fetchNextPoint from './path/to/your/points/service';
@@ -91,7 +92,8 @@ export const selectors = {
     isPollingActive, getPointHistory, getLastPoint,
 };
 ```
-This module exported two items: `actions` and `selectors`.   
+
+This module exports two items: `actions` and `selectors`.   
 `actions` is an object that contains two action creators: `start()` and `stop()`.   
 `selectors` is an object with selectors that our app needs.   
 Please notice the use of `createPollingActions()` and `getPollingState()`.
@@ -190,3 +192,8 @@ Cool.
 
 
 Example: https://naorye.github.io/redux-polling/
+Notice that `polling()` can return either value or a promise.   
+
+
+## Documentation
+TBD

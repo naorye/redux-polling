@@ -1,7 +1,7 @@
 {
   "name": "redux-polling",
   "version": "0.0.1-beta8",
-  "description": "Easy to use node module boilerplate with babel, jest and readme template",
+  "description": "Convenient way to support polling in your Redux app so you can focus on the business logic",
   "main": "./dist/index.js",
   "scripts": {
     "start": "npm run dev",
@@ -17,22 +17,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/naorye/create-node-module.git"
+    "url": "git+https://github.com/naorye/redux-polling.git"
   },
   "keywords": [
-    "api",
-    "request",
-    "axios",
-    "superagent",
+    "react",
+    "redux",
+    "polling",
+    "middleware",
     "fetch",
-    "resource"
+    "business-logic"
   ],
   "author": "NaorYe",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/naorye/create-node-module/issues"
+    "url": "https://github.com/naorye/redux-polling/issues"
   },
-  "homepage": "https://github.com/naorye/create-node-module#readme",
+  "homepage": "https://github.com/naorye/redux-polling#readme",
   "dependencies": {
     "babel-runtime": "^6.26.0"
   },

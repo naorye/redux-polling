@@ -1,5 +1,5 @@
-import { reduxPollingMiddleware } from 'dist'; /* eslint-disable-line import/no-unresolved */
 import { createStore, applyMiddleware, compose } from 'redux';
+import { reduxPollingMiddleware } from 'dist'; /* eslint-disable-line import/no-unresolved */
 import rootReducer from './reducer';
 
 const initialState = {};

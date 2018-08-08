@@ -5,6 +5,7 @@ import * as Recharts from 'recharts';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -14,6 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import { pointPollingActions, pointPollingSelectors } from './state/point-polling';
+import GitHubIcon from './GitHubIcon';
 
 const styles = theme => ({
     title: {
@@ -44,6 +46,9 @@ function App(props) {
                     <Typography variant="title" color="inherit" className={ classes.title }>
                         Redux Polling Example
                     </Typography>
+                    <IconButton color="inherit" aria-label="GitHub" href="https://github.com/naorye/redux-polling">
+                        <GitHubIcon />
+                    </IconButton>
                 </Toolbar>
             </AppBar>
 

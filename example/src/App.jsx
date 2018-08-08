@@ -46,7 +46,7 @@ function App(props) {
                     <Typography variant="title" color="inherit" className={ classes.title }>
                         Redux Polling Example
                     </Typography>
-                    <IconButton color="inherit" aria-label="GitHub" href="https://github.com/naorye/redux-polling">
+                    <IconButton color="inherit" aria-label="GitHub" href="https://github.com/naorye/redux-polling/tree/master/example">
                         <GitHubIcon />
                     </IconButton>
                 </Toolbar>

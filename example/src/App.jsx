@@ -2,52 +2,144 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as Recharts from 'recharts';
+import Typography from '@material-ui/core/Typography';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Button from '@material-ui/core/Button';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
 import { pointPollingActions, pointPollingSelectors } from './state/point-polling';
-import logo from './logo.svg';
-import './App.css';
+
+const styles = theme => ({
+    title: {
+        flexGrow: 1,
+    },
+    button: {
+        margin: theme.spacing.unit,
+    },
+    content: {
+        margin: theme.spacing.unit * 2,
+        paddingTop: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing.unit * 2,
+    },
+    result: {
+        margin: theme.spacing.unit,
+    },
+});
 
 function App(props) {
     const {
-        isPointPollingActive, lastPoint, lastChange, history, startPollingPoint, stopPollingPoint,
+        classes, isPointPollingActive, lastPoint, lastChange, history,
+        startPollingPoint, stopPollingPoint,
     } = props;
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={ logo } className="App-logo" alt="logo" />
-                <h1 className="App-title">
-                    Redux Polling Example
-                </h1>
-            </header>
-            <p className="App-intro">
-                Click on start and stop buttons to controll polling
-            </p>
-            <button type="button" onClick={ () => startPollingPoint() }>
-                Start
-            </button>
-            <button type="button" onClick={ () => stopPollingPoint() }>
-                Stop
-            </button>
-            <div>
-                { `Status: ${isPointPollingActive ? 'Active' : 'Not Active'}` }
-            </div>
-            <div>
-                { `Last Point: ${lastPoint} (${lastChange})` }
-            </div>
-            <div>
-                { `Point History: ${history.map(h => h.point).join(', ')}` }
-            </div>
+        <div className={ classes.root }>
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="title" color="inherit" className={ classes.title }>
+                        Redux Polling Example
+                    </Typography>
+                </Toolbar>
+            </AppBar>
 
-            <Recharts.LineChart width={ 600 } height={ 300 } data={ history }>
-                <Recharts.Line type="monotone" dataKey="point" stroke="#8884d8" isAnimationActive={ false } />
-                <Recharts.CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                <Recharts.XAxis dataKey="index" />
-                <Recharts.YAxis />
-            </Recharts.LineChart>
+            <div className={ classes.content }>
+                <Typography component="h2" variant="subheading" gutterBottom>
+                    Click on start and stop buttons to start and stop polling.
+                    <br />
+                    You can watch Dev Tools Network tab to see the traffic.
+                </Typography>
+
+                <div>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={ () => startPollingPoint() }
+                        disabled={ isPointPollingActive }
+                        className={ classes.button }
+                    >
+                        Start Polling
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={ () => stopPollingPoint() }
+                        disabled={ !isPointPollingActive }
+                        className={ classes.button }
+                    >
+                        Stop Polling
+                    </Button>
+                </div>
+
+                <div className={ classes.result }>
+                    <Typography gutterBottom noWrap>
+                        { `Status: ${isPointPollingActive ? 'Active' : 'Not Active'}` }
+                    </Typography>
+
+                    <Typography gutterBottom noWrap>
+                        { `Last Point: ${lastPoint}` }
+                    </Typography>
+
+                    <Typography gutterBottom noWrap>
+                        { `Change: ${lastChange}` }
+                    </Typography>
+                </div>
+
+                <Grid container spacing={ 24 }>
+                    <Grid item xs={ 4 }>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell numeric>
+                                        Index
+                                    </TableCell>
+                                    <TableCell numeric>
+                                        Point
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    history.map(item => (
+                                        <TableRow key={ item.index }>
+                                            <TableCell component="th" scope="row">
+                                                { item.index }
+                                            </TableCell>
+                                            <TableCell numeric>
+                                                { item.point }
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                }
+                            </TableBody>
+                        </Table>
+                    </Grid>
+                    <Grid item xs={ 8 }>
+                        <Recharts.LineChart
+                            width={ 600 }
+                            height={ 300 }
+                            data={ history }
+                            margin={ { top: 55 } }
+                        >
+                            <Recharts.Line type="monotone" dataKey="point" stroke="#8884d8" isAnimationActive={ false } />
+                            <Recharts.CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                            <Recharts.XAxis dataKey="index" />
+                            <Recharts.YAxis />
+                        </Recharts.LineChart>
+                    </Grid>
+                </Grid>
+            </div>
         </div>
     );
 }
 
 App.propTypes = {
+    /* eslint-disable-next-line react/forbid-prop-types */
+    classes: PropTypes.object.isRequired,
     isPointPollingActive: PropTypes.bool,
     lastPoint: PropTypes.number,
     lastChange: PropTypes.number,
@@ -83,4 +175,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(App);
+)(withStyles(styles)(App));

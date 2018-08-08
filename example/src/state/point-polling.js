@@ -3,7 +3,7 @@ import jsonp from 'jsonp';
 import { createSelector } from 'reselect';
 
 const pollingInterval = 1000;
-const historyLength = 30;
+const historyLength = 10;
 
 function fetchPoints(length) {
     return new Promise((resolve, reject) => {

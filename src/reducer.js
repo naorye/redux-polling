@@ -45,8 +45,16 @@ function createPollingReducer() {
                 break;
 
             case actionTypes.addEntries:
-                nextHistory = [ ...prevPollingState.history, ...action.payload ]
-                    .slice(-historyLimit);
+                if (historyLimit === 0) {
+                    nextHistory = prevPollingState.history;
+                } else {
+                    nextHistory = [ ...prevPollingState.history, ...action.payload ];
+
+                    if (historyLimit > 0) {
+                        nextHistory = nextHistory.slice(-historyLimit);
+                    }
+                }
+
                 [ lastEntry ] = action.payload.slice(-1);
 
                 nextPollingState = {

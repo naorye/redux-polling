@@ -9,6 +9,8 @@
 Almost every app contains charts, progress bars or components that consist on repeated data sampling. This is done by Polling. Support polling in React-Redux application can be frustrating. Each polling scenario requires to write a dedicated reducer and actions, implement the polling (all the setTimeout / setInterval stuff), deal with history and this is even before writing the business logic of polling itself. 
 Redux Polling provides a convenient way to support polling in React-Redux application so you will be able to focus on the business logic right away instead of dealing with all the boilerplate code. The setup is done by adding a middleware and you are ready to go.
 
+You can see a demo (here)[https://naorye.github.io/redux-polling/].
+
 ## Installation
 
 ```sh
@@ -21,7 +23,7 @@ yarn add redux-polling
 
 ## Setup
 
-1. Add `reduxPollingMiddleware` middleware to your Redux store:
+1. <a name="middleware-setup"></a>Add `reduxPollingMiddleware` middleware to your Redux store:
 ```javascript store.js
 import { createStore, applyMiddleware, compose } from 'redux';
 import { reduxPollingMiddleware } from 'redux-polling';
@@ -45,7 +47,7 @@ const store = createStore(
 export default store;
 ```
 
-2. Add `reduxPollingReducer` reducer to your root reducer:
+2. <a name="reducer-setup"></a>Add `reduxPollingReducer` reducer to your root reducer:
 ```javascript reducers.js
 import { combineReducers } from 'redux';
 import { reduxPollingNamespace, reduxPollingReducer } from 'redux-polling';
@@ -130,10 +132,10 @@ ActionsPanel.defaultProps = {
     stopPolling: () => {},
 };
 
-const mapDispatchToProps = {
-    startPolling: pointPollingActions.start,
-    stopPolling: pointPollingActions.stop,
-};
+const mapDispatchToProps = dispatch => ({
+    startPolling: () => dispatch(pointPollingActions.start()),
+    stopPolling: () => dispatch(pointPollingActions.stop()),
+});
 
 export default connect(
     undefined,
@@ -189,11 +191,101 @@ export default connect(
 
 Cool.
 
-
-
-Example: https://naorye.github.io/redux-polling/
-Notice that `polling()` can return either value or a promise.   
-
-
 ## Documentation
-TBD
+
+`redux-polling` module exports several modules:
+* `reduxPollingMiddleware`, `reduxPollingReducer` and `reduxPollingNamespace` which are required for setup.
+* `createPollingActions` and `getPollingState` which are required for polling creation and usage.
+
+### `reduxPollingMiddleware`
+
+`reduxPollingMiddleware` is the middleware that should be added to the store. You can see an example [here](#middleware-setup). This middleware is used for intercepting polling actions and operate the polling logic.
+
+### `reduxPollingReducer`
+
+`reduxPollingReducer` is the reducer that should be added to the root reducer and `reduxPollingNamespace` is the name for that reducer. You can see an example [here](#reducer-setup). This reducer operate the polling state.
+
+### `createPollingActions(pollingName, callbacks, pollingInterval, historyLimit)`
+
+`createPollingActions()` is the method that creates for you the polling redux actions. It expects the following arguments:
+* `pollingName` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)**, **required** Is a name for this polling operation. You may name your polling operation in any name you like.
+* `callbacks` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** or **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)**, **required** Is an object that contains callbacks for managing the polling cycle. The most important and the only required callback is the polling function which should do the polling logic. You can find all the available callbacks [here](#available-callbacks). Passing a function `func` instead of an object is equal to passing a callbacks object that contains only the polling function: `{ polling: func }`.
+* `pollingInterval` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)**, **optional**, **default is 5000ms** Is the polling interval in milliseconds. Each interval starts when polling cycle ends and trigger a new polling cycle. 
+* `historyLimit` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)**, **optional**, **default is 1** Is the number of entries you wish to store for this polling operation. Use `0` (zero) to not store any history, and -1 for unlimited history.
+
+`createPollingActions()` returns an object with two action creators: `start()` and `stop()`. Dispatching them will start and stop the polling operation.   
+**Important**: Any argument that will be supplied to `start()` will be passed to the polling callback:
+```javascript
+async function polling(accountId) {
+    const point = await fetchNextPoint(accountId);
+    return point;
+}
+
+const actions = createPollingActions('pointPolling', { polling }, 1000, 30);
+
+...
+...
+const accountId = 428;
+dispatch(actions.start(accountId));
+...
+...
+dispatch(actions.stop());
+```
+In this example polling started with account id as an argument (`actions.start(accountId);`). When the `polling(accountId)` method will be called, the `accountId` argument that was provided to `start()` will also be provided to `polling()`. There is no limitation on the arguments `start()` can get. They simply will be passed to `polling()`. 
+
+### `getPollingState(state, pollingName)`
+
+`getPollingState()` is a helper selector to retrieve the state of the polling operation named by `pollingName` argument. Like any other selector it gets the global state (`state`) and the name of the required polling operation state (`pollingName`). The returned polling state is an object that looks like:
+```javascript Polling state example
+{
+    isActive: false,            // Indicates whther the polling is activated or not
+    history: [],                // History entries
+    lastEntry: undefined,       // The last fetched entry
+}
+```
+
+### <a name="available-callbacks"></a>Available Callbacks
+
+The second argument `createPollingActions()` expected is an object with callbacks. Those callbacks are called during a polling cycle. The available callbacks are:
+* `polling(args)` **required** Each interval starts with calling to the `polling` callback that should do a single fetch / calculation and return a single entry. `args` are the arguments provided to the `start(args)` action. This method can be asynchronous and can return a promise.
+* `initialPolling(args)` Sometimes we need to perform a different operation upon the initial polling invocation. When provided, this callback will be called only for the first time polling, instead of the `polling` callback. `args` are the arguments provided to the `start(args)` action. This method can be asynchronous and can return a promise. Unlike the `polling` callback, `initialPolling` may return a single entry or an array of entries.
+* `shouldAddEntry(entry)` This callback is called right before adding an entry to the state. It gets a single entry (which is the response of the `polling` callback) and should return a boolean that indicates whether to add the entry to the state. 
+
+<!-- 
+## Tests
+
+Tests are written with [jest](https://facebook.github.io/jest/). In order to run it, clone this repository and:
+
+```sh
+npm test
+``` -->
+
+## Release History
+
+* 1.0.0
+    * First stable version
+
+## Meta
+
+Naor Ye – naorye@gmail.com
+
+Distributed under the MIT license. See ``LICENSE`` for more information.
+
+[https://github.com/naorye/redux-polling](https://github.com/naorye/redux-polling/)
+
+## Contributing
+
+1. Fork it (<https://github.com/naorye/redux-polling/fork>)
+2. Create your feature branch (`git checkout -b feature/fooBar`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Create a new Pull Request
+
+<!-- Markdown link & img dfn's -->
+[npm-image]: https://img.shields.io/npm/v/redux-polling.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/redux-polling
+[npm-downloads]: https://img.shields.io/npm/dm/redux-polling.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/naorye/redux-polling/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/naorye/redux-polling
+[coveralls-image]: https://img.shields.io/coveralls/naorye/redux-polling.svg?style=flat-square
+[coveralls-url]: https://coveralls.io/github/naorye/redux-polling?branch=master

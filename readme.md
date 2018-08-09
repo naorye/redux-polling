@@ -9,7 +9,7 @@
 Almost every app contains charts, progress bars or components that consist on repeated data sampling. This is done by Polling. Support polling in React-Redux application can be frustrating. Each polling scenario requires to write a dedicated reducer and actions, implement the polling (all the setTimeout / setInterval stuff), deal with history and this is even before writing the business logic of polling itself. 
 Redux Polling provides a convenient way to support polling in React-Redux application so you will be able to focus on the business logic right away instead of dealing with all the boilerplate code. The setup is done by adding a middleware and you are ready to go.
 
-You can see a demo [here](https://naorye.github.io/redux-polling/).
+You can see a demo [here](https://naorye.github.io/redux-polling/) or read the demo source code [here](https://github.com/naorye/redux-polling/tree/master/example).
 
 ## Installation
 

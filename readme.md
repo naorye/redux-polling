@@ -9,7 +9,7 @@
 Almost every app contains charts, progress bars or components that consist on repeated data sampling. This is done by Polling. Support polling in React-Redux application can be frustrating. Each polling scenario requires to write a dedicated reducer and actions, implement the polling (all the setTimeout / setInterval stuff), deal with history and this is even before writing the business logic of polling itself. 
 Redux Polling provides a convenient way to support polling in React-Redux application so you will be able to focus on the business logic right away instead of dealing with all the boilerplate code. The setup is done by adding a middleware and you are ready to go.
 
-You can see a demo (here)[https://naorye.github.io/redux-polling/].
+You can see a demo [here](https://naorye.github.io/redux-polling/).
 
 ## Installation
 
@@ -248,8 +248,8 @@ In this example polling started with account id as an argument (`actions.start(a
 
 The second argument `createPollingActions()` expected is an object with callbacks. Those callbacks are called during a polling cycle. The available callbacks are:
 * `polling(args)` **required** Each interval starts with calling to the `polling` callback that should do a single fetch / calculation and return a single entry. `args` are the arguments provided to the `start(args)` action. This method can be asynchronous and can return a promise.
-* `initialPolling(args)` Sometimes we need to perform a different operation upon the initial polling invocation. When provided, this callback will be called only for the first time polling, instead of the `polling` callback. `args` are the arguments provided to the `start(args)` action. This method can be asynchronous and can return a promise. Unlike the `polling` callback, `initialPolling` may return a single entry or an array of entries.
-* `shouldAddEntry(entry)` This callback is called right before adding an entry to the state. It gets a single entry (which is the response of the `polling` callback) and should return a boolean that indicates whether to add the entry to the state. 
+* `initialPolling(args)` **optional** Sometimes we need to perform a different operation upon the initial polling invocation. When provided, this callback will be called only for the first time polling, instead of the `polling` callback. `args` are the arguments provided to the `start(args)` action. This method can be asynchronous and can return a promise. Unlike the `polling` callback, `initialPolling` may return a single entry or an array of entries.
+* `shouldAddEntry(entry)` **optional** This callback is called right before adding an entry to the state. It gets a single entry (which is the response of the `polling` callback) and should return a boolean that indicates whether to add the entry to the state. 
 
 <!-- 
 ## Tests

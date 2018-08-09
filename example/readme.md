@@ -1,7 +1,7 @@
 # Redux Polling Demo
 > Usage example for Redux Polling module
 
-You can see the demo (here)[https://naorye.github.io/redux-polling/].
+You can see the demo [here](https://naorye.github.io/redux-polling/).
 
 ## Clone, install and run the demo
 

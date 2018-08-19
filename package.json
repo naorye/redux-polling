@@ -1,6 +1,6 @@
 {
   "name": "redux-polling",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Convenient way to support polling in your Redux app so you can focus on the business logic",
   "main": "./dist/index.js",
   "scripts": {

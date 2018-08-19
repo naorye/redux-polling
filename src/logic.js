@@ -20,6 +20,23 @@ export function start({ getState, dispatch }, action, next) {
 
 export function stop(_, action, next) {
     next(action);
+
+    const { callbacks: { onStop } } = action.meta;
+    if (typeof onStop === 'function') {
+        onStop();
+    }
+
+    return true;
+}
+
+export function reset(_, action, next) {
+    next(action);
+
+    const { callbacks: { onReset } } = action.meta;
+    if (typeof onReset === 'function') {
+        onReset();
+    }
+
     return true;
 }
 

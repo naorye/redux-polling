@@ -37,7 +37,7 @@ const styles = theme => ({
 function App(props) {
     const {
         classes, isPointPollingActive, lastPoint, lastChange, history,
-        startPollingPoint, stopPollingPoint,
+        startPollingPoint, stopPollingPoint, resetPollingPoint,
     } = props;
     return (
         <div className={ classes.root }>
@@ -77,6 +77,14 @@ function App(props) {
                         className={ classes.button }
                     >
                         Stop Polling
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={ () => resetPollingPoint() }
+                        className={ classes.button }
+                    >
+                        Reset Polling
                     </Button>
                 </div>
 
@@ -154,6 +162,7 @@ App.propTypes = {
     })),
     startPollingPoint: PropTypes.func,
     stopPollingPoint: PropTypes.func,
+    resetPollingPoint: PropTypes.func,
 };
 
 App.defaultProps = {
@@ -163,6 +172,7 @@ App.defaultProps = {
     history: [],
     startPollingPoint: () => {},
     stopPollingPoint: () => {},
+    resetPollingPoint: () => {},
 };
 
 const mapStateToProps = state => ({
@@ -175,6 +185,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     startPollingPoint: pointPollingActions.start,
     stopPollingPoint: pointPollingActions.stop,
+    resetPollingPoint: pointPollingActions.reset,
 };
 
 export default connect(

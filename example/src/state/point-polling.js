@@ -62,6 +62,10 @@ function shouldAddEntry(/* getState, value */) {
     return true;
 }
 
-const callbacks = { polling, shouldAddEntry };
+function onReset() {
+    isInitial = true;
+}
+
+const callbacks = { polling, shouldAddEntry, onReset };
 
 export const pointPollingActions = createPollingActions('pointPolling', callbacks, pollingInterval, historyLength);

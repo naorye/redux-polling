@@ -1,6 +1,7 @@
 export const actionTypes = {
     start: '@POLLING_STATE/START',
     stop: '@POLLING_STATE/STOP',
+    reset: '@POLLING_STATE/RESET',
     request: '@POLLING_STATE/REQUEST',
     addEntries: '@POLLING_STATE/ADD_ENTRIES',
 };
@@ -45,5 +46,6 @@ export function createPollingActions(
     return {
         start: createActionCreator(actionTypes.start, meta),
         stop: createActionCreator(actionTypes.stop, meta),
+        reset: createActionCreator(actionTypes.reset, meta),
     };
 }

@@ -40,13 +40,17 @@ export const pointPollingSelectors = {
     ),
 };
 
+let isInitial = true;
+
 async function polling(getState) {
-    const [ [ , point ] ] = await fetchPoints(1);
+    const [ ...points ] = await fetchPoints(isInitial ? historyLength : 1);
+    isInitial = false;
 
     const lastEntry = pointPollingSelectors.getLastEntry(getState());
-    const index = lastEntry ? lastEntry.index + 1 : 1;
+    const lastEntryIndex = lastEntry ? lastEntry.index + 1 : 1;
 
-    return { point, index };
+    const entries = points.map(([ , point ], index) => ({ point, index: index + lastEntryIndex }));
+    return { multipleEntries: true, entries };
 }
 
 function shouldAddEntry(/* getState, value */) {
@@ -58,12 +62,6 @@ function shouldAddEntry(/* getState, value */) {
     return true;
 }
 
-async function initialPolling() {
-    const [ ...points ] = await fetchPoints(historyLength);
-
-    return points.map(([ , point ], index) => ({ point, index: index + 1 }));
-}
-
-const callbacks = { polling, shouldAddEntry, initialPolling };
+const callbacks = { polling, shouldAddEntry };
 
 export const pointPollingActions = createPollingActions('pointPolling', callbacks, pollingInterval, historyLength);

@@ -12,8 +12,7 @@ export function start({ getState, dispatch }, action, next) {
 
     next(action);
 
-    const meta = { ...action.meta, initialPolling: true };
-    const requestAction = createAction(actionTypes.request, meta);
+    const requestAction = createAction(actionTypes.request, action.meta);
     dispatch(requestAction);
 
     return true;
@@ -33,13 +32,17 @@ export function request({ getState, dispatch }, action) {
         return false;
     }
 
-    const { callbacks, pollingInterval, initialPolling } = action.meta;
-    const isInitialPolling = initialPolling === true && typeof callbacks.initialPolling === 'function';
-    const pollingFunc = isInitialPolling ? callbacks.initialPolling : callbacks.polling;
+    const { callbacks, pollingInterval } = action.meta;
+    const pollingFunc = callbacks.polling;
     return Promise.resolve(pollingFunc(...requestPayload, getState))
         .then(
             (data) => {
-                const entries = isInitialPolling ? data : [ data ];
+                let entries;
+                if (data.multipleEntries === true && Array.isArray(data.entries) === true) {
+                    ({ entries } = data);
+                } else {
+                    entries = [ data ];
+                }
                 const addEntriesAction = createAction(
                     actionTypes.addEntries,
                     action.meta,
@@ -51,8 +54,7 @@ export function request({ getState, dispatch }, action) {
         )
         .then(() => {
             setTimeout(() => {
-                const meta = { ...action.meta, initialPolling: false };
-                const requestAction = createAction(actionTypes.request, meta);
+                const requestAction = createAction(actionTypes.request, action.meta);
                 dispatch(requestAction);
             }, pollingInterval);
         });

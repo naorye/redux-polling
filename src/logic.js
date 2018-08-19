@@ -55,8 +55,12 @@ export function request({ getState, dispatch }, action) {
         .then(
             (data) => {
                 let entries;
-                if (data.multipleEntries === true && Array.isArray(data.entries) === true) {
-                    ({ entries } = data);
+                if (data.multipleEntries === true) {
+                    if (Array.isArray(data.entries) === true) {
+                        ({ entries } = data);
+                    } else {
+                        throw new Error('Entries must be an array when providing multiple entries');
+                    }
                 } else {
                     entries = [ data ];
                 }

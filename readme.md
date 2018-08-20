@@ -2,8 +2,8 @@
 > Convenient way to support polling in your Redux app so you can focus on the business logic
 
 [![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
-[![Coverage Status][coveralls-image]][coveralls-url]
+<!-- [![Build Status][travis-image]][travis-url]
+[![Coverage Status][coveralls-image]][coveralls-url] -->
 <!-- [![Downloads Stats][npm-downloads]][npm-url] -->
 
 Almost every app contains charts, progress bars or components that consist on repeated data sampling. This is done by Polling. Support polling in React-Redux application can be frustrating. Each polling scenario requires to write a dedicated reducer and actions, implement the polling (all the setTimeout / setInterval stuff), deal with history and this is even before writing the business logic of polling itself. 

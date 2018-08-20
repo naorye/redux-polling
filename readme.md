@@ -64,7 +64,7 @@ export default combineReducers({
 ## Usage example
 
 Let's say we want to implement a chart page that consist on data polling. The page has two components:
-1. Action panel component that contains two buttons: "Start Polling" and "Stop Polling".
+1. Action panel component that contains two buttons: "Start Polling", "Stop Polling" and "Reset Polling".
 2. Chart component that shows the data.
    
 Redux Polling provides everything for those components: start and stop actions for the buttons and selectors for receiving the results and history. All we left to do is to implement the polling logic that fetches the data once (Redux Polling will call it on each interval):
@@ -96,7 +96,7 @@ export const selectors = {
 ```
 
 This module exports two items: `actions` and `selectors`.   
-`actions` is an object that contains two action creators: `start()` and `stop()`.   
+`actions` is an object that contains three action creators: `start()`, `stop()` and `reset()`.   
 `selectors` is an object with selectors that our app needs.   
 Please notice the use of `createPollingActions()` and `getPollingState()`.
 
@@ -118,6 +118,9 @@ function ActionsPanel(props) {
             <button type="button" onClick={ () => stopPolling() }>
                 Stop Polling
             </button>
+            <button type="button" onClick={ () => resetPolling() }>
+                Reset Polling
+            </button>
         </div>
     );
 }
@@ -125,16 +128,19 @@ function ActionsPanel(props) {
 ActionsPanel.propTypes = {
     startPolling: PropTypes.func,
     stopPolling: PropTypes.func,
+    resetPolling: PropTypes.func,
 };
 
 ActionsPanel.defaultProps = {
     startPolling: () => {},
     stopPolling: () => {},
+    resetPolling: () => {},
 };
 
 const mapDispatchToProps = dispatch => ({
     startPolling: () => dispatch(pointPollingActions.start()),
     stopPolling: () => dispatch(pointPollingActions.stop()),
+    resetPolling: () => dispatch(pointPollingActions.reset()),
 });
 
 export default connect(
@@ -213,7 +219,7 @@ Cool.
 * `pollingInterval` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)**, **optional**, **default is 5000ms** Is the polling interval in milliseconds. Each interval starts when polling cycle ends and trigger a new polling cycle. 
 * `historyLimit` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)**, **optional**, **default is 1** Is the number of entries you wish to store for this polling operation. Use `0` (zero) to not store any history, and -1 for unlimited history.
 
-`createPollingActions()` returns an object with two action creators: `start()` and `stop()`. Dispatching them will start and stop the polling operation.   
+`createPollingActions()` returns an object with three action creators: `start()`, `stop()` and `reset()`. Dispatching them will start, stop and reset the polling operation.   
 **Important**: Any argument that will be supplied to `start()` will be passed to the polling callback:
 ```javascript
 async function polling(accountId) {
@@ -230,12 +236,16 @@ dispatch(actions.start(accountId));
 ...
 ...
 dispatch(actions.stop());
+...
+...
+// When required to reset the polling state
+dispatch(actions.reset());
 ```
 In this example polling started with account id as an argument (`actions.start(accountId);`). When the `polling(accountId)` method will be called, the `accountId` argument that was provided to `start()` will also be provided to `polling()`. There is no limitation on the arguments `start()` can get. They simply will be passed to `polling()`. 
 
 ### `getPollingState(state, pollingName)`
 
-`getPollingState()` is a helper selector to retrieve the state of the polling operation named by `pollingName` argument. Like any other selector it gets the global state (`state`) and the name of the required polling operation state (`pollingName`). The returned polling state is an object that looks like:
+`getPollingState(pollingName)` is a helper selector to retrieve the state of the polling operation named by `pollingName` argument. Like any other selector it gets the global state (`state`) and the name of the required polling operation state (`pollingName`). The returned polling state is an object that looks like:
 ```javascript Polling state example
 {
     isActive: false,            // Indicates whther the polling is activated or not
@@ -247,8 +257,18 @@ In this example polling started with account id as an argument (`actions.start(a
 ### <a name="available-callbacks"></a>Available Callbacks
 
 The second argument `createPollingActions()` expected is an object with callbacks. Those callbacks are called during a polling cycle. The available callbacks are:
-* `polling(args)` **required** Each interval starts with calling to the `polling` callback that should do a single fetch / calculation and return a single entry. `args` are the arguments provided to the `start(args)` action. This method can be asynchronous and can return a promise.
-* `initialPolling(args)` **optional** Sometimes we need to perform a different operation upon the initial polling invocation. When provided, this callback will be called only for the first time polling, instead of the `polling` callback. `args` are the arguments provided to the `start(args)` action. This method can be asynchronous and can return a promise. Unlike the `polling` callback, `initialPolling` may return a single entry or an array of entries.
+* `polling(...args, getState)` **required** Each interval starts with calling to the `polling` callback that should do a single fetch / calculation and return a single entry. `...args` are the arguments that was provided to the `start(args)` action. `getState()` method is also provided as the last argument so you can query your state. This method can be asynchronous and can return a promise. The returned / resolved value is store as an entry in the polling history.   
+Sometimes you may want to return and store multiple items in the history for single polling. You can do that by returning the following `{ multipleEntries: true, entries: [ ...entries ] }`.   
+Example:
+```javascript Return multiple entriens
+async function polling(accountId, getState) { // accountId was provided by start() action
+    const state = getState();
+    const pointsCount = selectors.getPointsCount();
+    const points = await fetchMultiplePoints(accountId, pointsCount);
+    // points is an array
+    return { multipleEntries: true, entries: points};
+}
+```
 * `shouldAddEntry(entry)` **optional** This callback is called right before adding an entry to the state. It gets a single entry (which is the response of the `polling` callback) and should return a boolean that indicates whether to add the entry to the state. 
 
 <!-- 
@@ -262,6 +282,10 @@ npm test
 
 ## Release History
 
+* 1.1.1
+    * Support returning multiple entries in the polling callback
+    * Support reset action to reset the state
+    * Remove initialPolling callback (can be handled in the polling callback by the user)
 * 1.0.0
     * First stable version
 

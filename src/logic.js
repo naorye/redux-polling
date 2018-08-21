@@ -90,7 +90,7 @@ export function addEntries({ getState }, action, next) {
     }
 
     if (typeof shouldAddEntry === 'function') {
-        entries = entries.filter(entry => shouldAddEntry(getState, entry));
+        entries = entries.filter(entry => shouldAddEntry(entry, getState));
     }
 
     if (entries.length > 0) {

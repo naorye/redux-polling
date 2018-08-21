@@ -269,7 +269,7 @@ async function polling(accountId, getState) { // accountId was provided by start
     return { multipleEntries: true, entries: points};
 }
 ```
-* `shouldAddEntry(entry)` **optional** This callback is called right before adding an entry to the state. It gets a single entry (which is the response of the `polling` callback) and should return a boolean that indicates whether to add the entry to the state. 
+* `shouldAddEntry(entry, getState)` **optional** This callback is called right before adding an entry to the state. It gets a single entry (which is the response of the `polling` callback) and `getState()` method. It should return a boolean that indicates whether to add the entry to the state. 
 
 <!-- 
 ## Tests

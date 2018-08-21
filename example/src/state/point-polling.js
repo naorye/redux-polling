@@ -53,7 +53,7 @@ async function polling(getState) {
     return { multipleEntries: true, entries };
 }
 
-function shouldAddEntry(/* getState, value */) {
+function shouldAddEntry(/* value, getState */) {
     // const isEven = value.point % 2 === 0;
     // if (!isEven) {
     //     console.log(`Filter odd point ${value.point}`);

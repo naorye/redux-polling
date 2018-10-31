@@ -1,6 +1,8 @@
 import { actionTypes, createAction } from './actions';
 import { getPollingState } from './reducer';
 
+let timeouts = {};
+
 export function start({ getState, dispatch }, action, next) {
     const state = getState();
     const { pollingName } = action.meta;
@@ -32,10 +34,12 @@ export function stop(_, action, next) {
 export function reset(_, action, next) {
     next(action);
 
-    const { callbacks: { onReset } } = action.meta;
+    const { callbacks: { onReset }, pollingName } = action.meta;
     if (typeof onReset === 'function') {
         onReset();
     }
+
+    clearTimeout(timeouts[pollingName]);
 
     return true;
 }
@@ -74,7 +78,7 @@ export function request({ getState, dispatch }, action) {
             err => err, // If exception during polling - do nothing
         )
         .then(() => {
-            setTimeout(() => {
+            timeouts[pollingName] = setTimeout(() => {
                 const requestAction = createAction(actionTypes.request, action.meta);
                 dispatch(requestAction);
             }, pollingInterval);

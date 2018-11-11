@@ -1,7 +1,7 @@
 import { actionTypes, createAction } from './actions';
 import { getPollingState } from './reducer';
 
-let timeouts = {};
+const timeouts = {};
 
 export function start({ getState, dispatch }, action, next) {
     const state = getState();
@@ -23,10 +23,12 @@ export function start({ getState, dispatch }, action, next) {
 export function stop(_, action, next) {
     next(action);
 
-    const { callbacks: { onStop } } = action.meta;
+    const { callbacks: { onStop }, pollingName } = action.meta;
     if (typeof onStop === 'function') {
         onStop();
     }
+    
+    clearTimeout(timeouts[pollingName]);
 
     return true;
 }

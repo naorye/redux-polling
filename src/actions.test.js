@@ -1,4 +1,4 @@
-import { actionTypes, createAction, isPollingAction /* , createPollingActions */ } from './actions';
+import { actionTypes, createAction, isPollingAction, createPollingActions } from './actions';
 
 describe('./actions', () => {
     test('it should contains the following action types: start, stop, request and addEntries', () => {
@@ -30,5 +30,14 @@ describe('./actions', () => {
         expect(isPollingAction({ type: '@POLLING_STATE/STOP', meta: { pollingName: null } })).toEqual(false);
         expect(isPollingAction({ type: '@POLLING_STATE/REQUEST', meta: { } })).toEqual(false);
         expect(isPollingAction({ type: '@POLLING_STATE/ADD_ENTRIES' })).toEqual(false);
+    });
+
+    test('createPollingActions should be a function', () => {
+        expect(typeof createPollingActions).toBe('function');
+    });
+     test('createPollingActions should contain start and stop functions', () => {
+        const actions = createPollingActions('REDUX_POLLING', { polling: () => {} });
+        expect(typeof actions.start).toBe('function');
+        expect(typeof actions.stop).toBe('function');
     });
 });
